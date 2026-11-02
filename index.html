@@ -1,354 +1,209 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SudoZen</title>
-<meta name="theme-color" content="#05090b">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2306161a'/%3E%3Ccircle cx='32' cy='32' r='15' fill='none' stroke='%2322d3ee' stroke-width='6'/%3E%3C/svg%3E">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>SudoZen</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='9' fill='%230D1117'/%3E%3Cpath d='M30 12A14 14 0 1 0 33 22' fill='none' stroke='%23A99BFF' stroke-width='3' stroke-linecap='round'/%3E%3Crect x='16' y='16' width='8' height='8' fill='%2364E6D2'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#05090b;--p:#0a1417;--p2:#0f1d21;--line:#173238;--teal:#14b8a6;--cyan:#22d3ee;--tx:#e8f6f6;--mut:#78a0a6;--red:#ff5c6c}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;min-height:100vh;font-family:Inter,"Segoe UI",system-ui,sans-serif;color:var(--tx);background:radial-gradient(900px 400px at 85% -10%,#0a3a42 0,transparent 70%),var(--bg)}
-.screen{display:none;max-width:1040px;margin:0 auto;padding:16px 16px 32px;animation:in .3s ease}.screen.on{display:block}
-@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-h1{margin:0;font-size:2.6rem;font-weight:800;letter-spacing:-1px;background:linear-gradient(90deg,var(--teal),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
-.tag{font-size:.7rem;letter-spacing:4px;color:var(--mut);margin:4px 0 14px}
-h2{color:var(--cyan);margin:.2em 0 .6em}
-.hero{max-width:440px;margin:36px auto 0;text-align:center}.hero p{color:var(--mut);margin:0 0 18px}
-.btn{display:block;width:100%;padding:13px;margin:8px 0;border:0;border-radius:10px;font-size:.95rem;font-weight:700;cursor:pointer;color:#021417;background:linear-gradient(90deg,var(--teal),var(--cyan));transition:transform .1s,filter .2s}
-.btn:hover{filter:brightness(1.1)}.btn:active{transform:scale(.98)}
-.btn.alt{background:var(--p2);color:var(--tx);border:1px solid var(--line)}
-.btn small{display:block;font-weight:400;opacity:.75;font-size:.75rem}
-.card{background:var(--p);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
-.card h3{margin:0 0 10px;font-size:.68rem;text-transform:uppercase;letter-spacing:1.8px;color:var(--mut);font-weight:600}
-.row{display:flex;justify-content:space-between;margin:6px 0;font-size:.9rem}
-.how{max-width:520px;margin:0 auto}ol{padding-left:20px;line-height:1.7}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.logo{font-weight:800;font-size:1.3rem;background:linear-gradient(90deg,var(--teal),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
-.chip{font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;padding:5px 12px;border-radius:99px;border:1px solid var(--teal);color:var(--cyan)}
-.layout{display:grid;grid-template-columns:minmax(0,560px) 1fr;gap:18px;align-items:start}
-@media(max-width:840px){.layout{grid-template-columns:1fr}}
-#board{display:grid;grid-template-columns:repeat(9,1fr);aspect-ratio:1;border:2px solid var(--cyan);border-radius:12px;overflow:hidden;background:var(--line);box-shadow:0 0 40px rgba(34,211,238,.12)}
-#board.hide{filter:blur(14px);pointer-events:none}
-.c{background:var(--p);display:flex;align-items:center;justify-content:center;font-size:clamp(1.1rem,5.5vw,1.8rem);border:1px solid #11262b;cursor:pointer;user-select:none;transition:background .15s}
-.c:nth-child(3n){border-right:2px solid #2a6a73}.c:nth-child(9n){border-right:1px solid #11262b}
-.c:nth-child(n+19):nth-child(-n+27),.c:nth-child(n+46):nth-child(-n+54){border-bottom:2px solid #2a6a73}
-.c.g{color:var(--tx);font-weight:700}.c.u{color:var(--cyan)}
-.c.rel{background:#0d2227}.c.same{background:#0e4248}
-.c.sel{background:var(--teal);color:#021417;box-shadow:inset 0 0 0 2px var(--cyan)}
-.c.bad{background:#34101a;color:var(--red);animation:sh .3s}
-@keyframes sh{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
-.n{display:grid;grid-template-columns:repeat(3,1fr);width:100%;height:100%;font-size:clamp(.5rem,2.2vw,.7rem);color:var(--mut);text-align:center;align-items:center;padding:1px}
-.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.kpi{background:var(--p2);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
-.kpi span{display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:1.4px;color:var(--mut)}
-.kpi b{display:block;font-size:1.6rem;margin-top:2px;font-variant-numeric:tabular-nums}
-.kpi.hi b{color:var(--cyan)}
-.ringwrap{display:flex;align-items:center;gap:16px}
-.ring{width:92px;height:92px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--cyan) 0%,var(--line) 0);flex:none}
-.ring i{width:72px;height:72px;border-radius:50%;background:var(--p);display:grid;place-items:center;font-style:normal;font-weight:800;font-size:1.2rem;color:var(--cyan)}
-.nb{display:grid;grid-template-columns:14px 1fr 18px;gap:8px;align-items:center;margin:6px 0;font-size:.8rem}
-.nb>div{height:6px;background:var(--line);border-radius:6px;overflow:hidden}.nb i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--cyan));transition:width .3s}
-.nb em{font-style:normal;color:var(--mut);text-align:right}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
-.pad{display:grid;grid-template-columns:repeat(9,1fr);gap:5px;margin-top:12px}
-.pad button{aspect-ratio:.85;border-radius:10px;border:1px solid var(--line);background:var(--p2);color:var(--tx);font-size:clamp(1rem,4.5vw,1.4rem);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0}
-.pad button small{font-size:.58rem;color:var(--mut)}.pad button:hover{border-color:var(--cyan)}.pad button.done{opacity:.25;pointer-events:none}
-.tools{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
-.tools button{padding:11px 2px;border-radius:10px;border:1px solid var(--line);background:var(--p2);color:var(--tx);font-size:.8rem;cursor:pointer}
-.tools button:hover{border-color:var(--cyan)}.tools button.on{background:var(--teal);color:#021417;font-weight:700}
-.ov{position:fixed;inset:0;background:rgba(2,8,10,.9);display:none;align-items:center;justify-content:center;padding:20px;z-index:9}
-.ov.on{display:flex}.ov .card{max-width:380px;width:100%;text-align:center}
-.big{font-size:2rem;font-weight:800;color:var(--cyan);letter-spacing:3px;margin-bottom:10px}
-label.sw{display:flex;justify-content:space-between;margin:8px 0}
-.menu{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}.menu .btn{margin:6px 0}
-.dc{text-align:left;background:var(--p);color:var(--tx);border:1px solid var(--line)}.dc:hover{border-color:var(--cyan)}.dc b{font-size:1.1rem;color:var(--cyan)}
-.opt{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.opt:last-child{border:0}
-.opt small{display:block;color:var(--mut);font-size:.78rem;margin-top:2px}
-.opt input[type=checkbox]{width:42px;height:24px;appearance:none;-webkit-appearance:none;background:var(--line);border-radius:99px;position:relative;cursor:pointer;flex:none;transition:.2s}
-.opt input[type=checkbox]::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
-.opt input[type=checkbox]:checked{background:var(--teal)}.opt input[type=checkbox]:checked::after{left:21px}
-select{background:var(--p2);color:var(--tx);border:1px solid var(--line);border-radius:8px;padding:8px}
-.tools{grid-template-columns:repeat(5,1fr)}.tools button{font-size:.75rem}
-.ach{display:flex;justify-content:space-between;padding:7px 0;font-size:.9rem}.ach.lock{opacity:.4}
-#splash{position:fixed;inset:0;background:var(--bg);z-index:99;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .4s}#splash.off{opacity:0;pointer-events:none}
-.sname{font-size:2.4rem;font-weight:800;margin-top:12px;background:linear-gradient(90deg,var(--teal),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
-.lbar{width:160px;height:4px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:18px}.lbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--cyan));animation:ld 1.4s ease forwards}@keyframes ld{to{width:100%}}
-.lg{width:30px;height:30px;vertical-align:middle;margin-right:8px;flex:none}.lg.big{width:72px;height:72px;margin:0 0 6px}.lg.xl{width:110px;height:110px;margin:0;animation:pu 1.4s ease}@keyframes pu{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
-.logo{display:flex;align-items:center}
-.pcard{display:flex;align-items:center;gap:12px;text-align:left;background:var(--p);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:18px;cursor:pointer}
-.pcard:hover{border-color:var(--cyan)}.pcard .pi{flex:1}.pcard b{display:block}.pcard small{color:var(--mut)}
-.xp{height:6px;background:var(--line);border-radius:6px;margin-top:6px;overflow:hidden}.xp i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--cyan))}
-.av{display:inline-grid;place-items:center;width:46px;height:46px;border-radius:50%;color:#021417;font-weight:800;font-size:1.2rem;flex:none}
-.avs{display:flex;justify-content:center;gap:10px;margin:14px 0}.avs .av{width:38px;height:38px;cursor:pointer;border:3px solid transparent}.avs .av.on{border-color:var(--tx)}
-#pfName{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--p2);color:var(--tx);font-size:1rem;margin-top:12px;text-align:center}
-.tstep{font-size:.7rem;letter-spacing:2px;color:var(--mut)}
-body[data-theme=midnight]{--bg:#000;--p:#04090b;--p2:#081114}
-body[data-theme=light]{--bg:#eaf6f7;--p:#fff;--p2:#e2f0f2;--line:#bcd9dc;--tx:#0b2226;--mut:#4a6f75;background:var(--bg)}
-body[data-theme=light] .c{border-color:#d3e6e8}body[data-theme=light] .c.rel{background:#e3f4f6}body[data-theme=light] .c.same{background:#bfe9ee}body[data-theme=light] .c.bad{background:#ffe0e4}
-body[data-theme=light] .ov{background:rgba(230,245,246,.94)}body[data-theme=light] .kpi.hi b,body[data-theme=light] h2{color:#0e7490}
-.bignum .c{font-size:clamp(1.4rem,7vw,2.3rem)}
-</style>
-</head>
-<body>
-<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="lgr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14b8a6"/><stop offset="1" stop-color="#22d3ee"/></linearGradient>
-<symbol id="logo" viewBox="0 0 64 64"><rect x="4" y="4" width="56" height="56" rx="14" fill="#06161a" stroke="url(#lgr)" stroke-width="3"/><path d="M24 4v56M40 4v56M4 24h56M4 40h56" stroke="url(#lgr)" stroke-width="1.5" opacity=".45"/><circle cx="32" cy="32" r="11" fill="none" stroke="url(#lgr)" stroke-width="4"/><path d="M32 21a11 11 0 0 1 0 22a5.5 5.5 0 0 1 0-11a5.5 5.5 0 0 0 0-11z" fill="url(#lgr)"/></symbol></defs></svg>
-<div id="splash"><svg class="lg xl"><use href="#logo"/></svg><div class="sname">SudoZen</div><div class="tag">FOCUS · SOLVE · FLOW</div><div class="lbar"><i></i></div></div>
-
-<section class="screen on" id="home"><div class="hero">
-  <div class="pcard" id="pcard" onclick="openProfile()"></div>
-  <svg class="lg big"><use href="#logo"/></svg><h1>SudoZen</h1><div class="tag">FOCUS · SOLVE · FLOW</div>
-  <p>A calm, modern Sudoku game. Pick your challenge, track your performance, and build a winning streak.</p>
-  <button class="btn" id="bCont" onclick="cont()" style="display:none">Continue Game<small id="contSub"></small></button>
-  <button class="btn" onclick="show('diff')">New Game<small>Choose a difficulty</small></button>
-  <button class="btn" onclick="start('medium',true)">Daily Challenge<small id="dSub"></small></button>
-  <div class="menu">
-    <button class="btn alt" onclick="showStats()">Statistics</button>
-    <button class="btn alt" onclick="openSet('home')">Settings</button>
-    <button class="btn alt" onclick="show('how')">How to Play</button>
-    <button class="btn alt" onclick="show('about')">About</button>
-  </div></div></section>
-
-<section class="screen" id="diff"><div class="how">
-  <h2>Choose Difficulty</h2>
-  <button class="btn dc" onclick="start('easy')"><b>Easy</b><small>38 clues. Best for beginners learning the rules.</small></button>
-  <button class="btn dc" onclick="start('medium')"><b>Medium</b><small>31 clues. A balanced puzzle that needs some logic.</small></button>
-  <button class="btn dc" onclick="start('hard')"><b>Hard</b><small>26 clues. Needs patience and note-taking.</small></button>
-  <button class="btn dc" onclick="start('expert')"><b>Expert</b><small>23 clues. For experienced solvers. Higher score bonus.</small></button>
-  <button class="btn alt" onclick="show('home')">Back</button></div></section>
-
-<section class="screen" id="stats"><div class="how">
-  <h2>Statistics</h2><div class="kpis" id="stGrid"></div>
-  <div class="card" style="margin-top:12px"><h3>Best times and wins</h3><div id="stDiff"></div></div>
-  <div class="card"><h3>Hall of Fame (top 5 scores)</h3><div id="stTop"></div></div>
-  <div class="card"><h3>Achievements</h3><div id="stAch"></div></div>
-  <button class="btn alt" onclick="resetStats()">Reset Statistics</button>
-  <button class="btn" onclick="show('home')">Back</button></div></section>
-
-<section class="screen" id="settings"><div class="how">
-  <h2>Settings</h2><div class="card">
-  <div class="opt"><div><b>Sound effects</b><small>Short tones for taps, mistakes, and wins.</small></div><input type="checkbox" id="sSound" onchange="setS()"></div>
-  <div class="opt"><div><b>Smart highlighting</b><small>Highlights the row, column, box, and matching numbers.</small></div><input type="checkbox" id="sHl" onchange="setS()"></div>
-  <div class="opt"><div><b>Instant error check</b><small>Wrong numbers turn red and count as mistakes. Off = no feedback until you finish.</small></div><input type="checkbox" id="sErr" onchange="setS()"></div>
-  <div class="opt"><div><b>Show timer</b><small>Shows or hides the time on the dashboard.</small></div><input type="checkbox" id="sTimer" onchange="setS()"></div>
-  <div class="opt"><div><b>Auto-remove notes</b><small>Deletes matching notes in the same row, column, and box after a correct entry.</small></div><input type="checkbox" id="sAuto" onchange="setS()"></div>
-  <div class="opt"><div><b>Mistake limit</b><small>Game ends when you reach this many mistakes.</small></div>
-    <select id="sLimit" onchange="setS()"><option value="3">3</option><option value="5">5</option><option value="0">Unlimited</option></select></div>
-  <div class="opt"><div><b>Accent color</b><small>Changes the highlight color of the interface.</small></div>
-    <select id="sAcc" onchange="setS()"><option value="cyan">Cyan</option><option value="teal">Teal</option><option value="ice">Ice blue</option></select></div>
-  <div class="opt"><div><b>Theme</b><small>Dark, Midnight (pure black), or Light.</small></div><select id="sTheme" onchange="setS()"><option value="dark">Dark</option><option value="midnight">Midnight</option><option value="light">Light</option></select></div>
-  <div class="opt"><div><b>Large numbers</b><small>Bigger digits on the board for easier reading.</small></div><input type="checkbox" id="sBig" onchange="setS()"></div>
-  <div class="opt"><div><b>Vibration</b><small>Short vibration on mistakes (phones only).</small></div><input type="checkbox" id="sVib" onchange="setS()"></div>
-  </div><div class="card"><h3>Player and data</h3>
-  <button class="btn alt" onclick="openProfile()">Edit Player Profile</button>
-  <button class="btn alt" onclick="tour()">Replay Quick Tour</button>
-  <button class="btn alt" onclick="clearData()">Clear All Saved Data</button></div>
-  <button class="btn" onclick="backSet()">Done</button></div></section>
-
-<section class="screen" id="about"><div class="how">
-  <h2>About SudoZen</h2><div class="card">
-  <p>SudoZen is a Sudoku game made for a calm, focused experience. It has four difficulty levels, a daily puzzle, a performance dashboard, notes, hints, undo, and saved statistics.</p>
-  <ol>
-    <li><b>Goal:</b> fill the grid so each row, column, and 3×3 box has the numbers 1–9 once.</li>
-    <li><b>Select:</b> tap an empty cell. With highlighting on, its row, column, box, and matching numbers light up.</li>
-    <li><b>Enter:</b> tap a number under the board or press 1–9. Erase or Backspace removes it.</li>
-    <li><b>Mistakes:</b> wrong numbers turn red and add to your mistake count. If you reach the limit, the game ends.</li>
-    <li><b>Notes (N):</b> write small possible numbers in a cell.</li>
-    <li><b>Undo (U):</b> takes back your last move.</li>
-    <li><b>Hints:</b> 3 per game. A hint fills a cell correctly and lowers your score.</li>
-    <li><b>Dashboard:</b> time, score, accuracy, progress, and a tracker for how many of each number remain.</li>
-    <li><b>Daily Challenge:</b> one shared puzzle per day. Your game is saved so you can Continue later.</li>
-    <li><b>Win:</b> complete every cell correctly to see your score.</li>
-  </ol>
-  <p style="color:var(--mut);font-size:.85rem">Version 1.0 · HCI 2 project · #ThisIsDNSCIT</p></div>
-  <button class="btn" onclick="show('home')">Back</button></div></section>
-
-
-<section class="screen" id="how"><div class="how">
-  <h2>How to Play</h2>
-  <div class="card"><ol>
-    <li><b>Goal:</b> fill the grid so each row, column, and 3×3 box has the numbers 1–9 once.</li>
-    <li><b>Select:</b> click or tap an empty cell. Its row, column, and box light up, and matching numbers glow.</li>
-    <li><b>Enter:</b> tap a number under the board or press 1–9. Use Erase or Backspace to remove it.</li>
-    <li><b>Wrong answers</b> turn red and shake. They are added to your mistake count on the dashboard.</li>
-    <li><b>Notes:</b> turn on Notes (or press N) to write small possible numbers in a cell.</li>
-    <li><b>Hints:</b> you have 3. A hint fills the selected cell with the correct number and lowers your score.</li>
-    <li><b>Dashboard:</b> shows time, mistakes, hints left, progress, and how many of each number you still need.</li>
-    <li><b>Pause</b> stops the timer and hides the board.</li>
-    <li><b>Win:</b> complete every cell to see your time and score.</li>
-  </ol></div>
-  <button class="btn" onclick="show('home')">Back to Menu</button>
-</div></section>
-
-<section class="screen" id="game">
-  <div class="top"><span class="logo"><svg class="lg"><use href="#logo"/></svg>SudoZen</span><span><span class="chip" id="dl"></span> <button class="chip" style="background:none;cursor:pointer" onclick="pause(true);$('pauseOv').classList.remove('on');openSet('game')">Settings</button></span></div>
-  <div class="layout">
-    <div>
-      <div id="board"></div>
-      <div class="pad" id="pad" style="margin-top:12px"></div>
-      <div class="tools">
-        <button id="bNotes" onclick="toggleNotes()">Notes</button>
-        <button onclick="undo()">Undo</button>
-        <button onclick="erase()">Erase</button>
-        <button id="bHint" onclick="hint()">Hint 3</button>
-        <button onclick="pause(true)">Pause</button>
-      </div>
-    </div>
-    <aside>
-      <div class="card"><h3>Performance</h3>
-        <div class="kpis">
-          <div class="kpi hi"><span>Time</span><b id="tm">00:00</b></div>
-          <div class="kpi hi"><span>Score</span><b id="sc">0</b></div>
-          <div class="kpi"><span>Mistakes</span><b id="ms">0</b></div>
-          <div class="kpi"><span>Hints left</span><b id="hl">3</b></div>
-        </div></div>
-      <div class="card"><h3>Progress</h3>
-        <div class="ringwrap"><div class="ring" id="ring"><i id="pc">0%</i></div>
-        <div style="flex:1"><div class="row"><span>Filled</span><b id="cc">0/81</b></div><div class="row"><span>Accuracy</span><b id="ac">100%</b></div><div class="row"><span>Best time</span><b id="bt">—</b></div></div></div></div>
-      <div class="card"><h3>Number tracker</h3><div id="rem" class="grid2"></div></div>
-    </aside>
-  </div>
-</section>
-
-<div class="ov" id="pauseOv"><div class="card">
-  <div class="big">PAUSED</div>
-  <button class="btn" onclick="pause(false)">Resume</button>
-  <button class="btn alt" onclick="start(D)">New Puzzle</button>
-  <button class="btn alt" onclick="quit()">Main Menu</button>
-</div></div>
-
-<div class="ov" id="winOv"><div class="card">
-  <div class="big">SOLVED</div><p id="wmsg"></p>
-  <div class="kpis" style="grid-template-columns:repeat(3,1fr)"><div class="kpi"><span>Time</span><b id="wt">0</b></div><div class="kpi"><span>Mistakes</span><b id="wm">0</b></div><div class="kpi"><span>Hints</span><b id="wh">0</b></div></div>
-  <p id="wxp" style="color:var(--cyan);margin:4px 0"></p><p>Score <b id="ws" style="font-size:2rem;color:var(--cyan)">0</b></p>
-  <button class="btn alt" onclick="shareRes()">Share Result</button>
-  <button class="btn" onclick="start(D)">Play Again</button>
-  <button class="btn alt" onclick="quit()">Main Menu</button>
-</div></div>
-
-<div class="ov" id="goOv"><div class="card"><div class="big">GAME OVER</div><p>You reached the mistake limit. Try again, you can do it.</p>
-<button class="btn" onclick="start(D)">Try Again</button><button class="btn alt" onclick="quit()">Main Menu</button></div></div>
-<div class="ov" id="pfOv"><div class="card"><h2 style="margin-top:0">Player Profile</h2><div id="pfPrev"></div>
-<input id="pfName" maxlength="14" placeholder="Enter your name" oninput="pfPrev()"><div class="avs" id="pfAv"></div><button class="btn" onclick="saveProfile()">Save</button></div></div>
-<div class="ov" id="tourOv"><div class="card"><div class="tstep" id="tStep"></div><h2 id="tTitle" style="margin:.3em 0"></h2><p id="tText" style="color:var(--mut)"></p>
-<button class="btn" id="tNext" onclick="tourNext()">Next</button><button class="btn alt" onclick="tourEnd()">Skip</button></div></div>
+:root{--bg:#0D1117;--bg2:#151D28;--card:#1B2635;--ac:#64E6D2;--lav:#A99BFF;--blu:#79A9FF;--tx:#EAF0F6;--tx2:#9AA8B8;--ok:#7FE0B2;--warn:#F3C879;--err:#FF8293;--ln:#354355;--bs:1;--on:#0D1117;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[data-theme=light]{--bg:#EEF2F7;--bg2:#E2E8F0;--card:#fff;--tx:#14202E;--tx2:#4A5A6C;--ln:#B9C4D2;--ac:#0F9C8A;--lav:#6B5BD6;--blu:#2F6FDB;--ok:#1E8C5A;--warn:#8A5A00;--err:#C7304B;--on:#fff}
+[data-acc=lav]{--ac:#A99BFF}[data-acc=blu]{--ac:#79A9FF}[data-theme=light][data-acc=lav]{--ac:#6B5BD6}[data-theme=light][data-acc=blu]{--ac:#2F6FDB}
+[data-hc=on]{--tx2:var(--tx);--ln:var(--tx2)}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 Outfit,system-ui,sans-serif}
+h1,h2,h3,.dsp{font-family:'Chakra Petch',system-ui,sans-serif;margin:0 0 8px;letter-spacing:.01em}h1{font-size:1.9rem}h2{font-size:1.25rem}p{margin:0 0 12px;color:var(--tx2)}
+button{font:inherit;color:inherit;cursor:pointer}:focus-visible{outline:3px solid var(--lav);outline-offset:2px}
+.app{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:100%}
+.sb{position:sticky;top:0;height:100dvh;background:var(--bg2);border-right:1px solid var(--ln);padding:18px 12px;display:flex;flex-direction:column;gap:4px;overflow:auto}
+.brand{display:flex;align-items:center;gap:8px;padding:0 8px 14px;font:700 1.35rem 'Chakra Petch';color:var(--tx)}.brand svg{color:var(--tx)}
+.nv{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:var(--tx2);text-decoration:none;border:1px solid transparent}
+.nv:hover{background:var(--card);color:var(--tx)}.nv.on{background:color-mix(in srgb,var(--ac) 16%,var(--card));color:var(--tx);border-color:var(--ac)}
+.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.mtop{display:none;align-items:center;gap:10px;padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--ln)}
+main{padding:24px;max-width:1100px;width:100%;margin:0 auto}
+.cd{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:18px}.gr{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:14px 0}
+.gr2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin:14px 0}
+.big{font:700 1.9rem 'Chakra Petch';color:var(--ac)}.sm{font-size:.9rem;color:var(--tx2)}
+.hero{display:flex;gap:18px;align-items:center;flex-wrap:wrap;background:linear-gradient(135deg,var(--card),var(--bg2));border:1px solid var(--ln);border-radius:16px;padding:22px}
+.b{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;border-radius:10px;border:1px solid var(--ln);background:var(--card);font-weight:500;min-height:44px}
+.b:hover{border-color:var(--ac)}.b.p{background:var(--ac);color:var(--on);border-color:var(--ac);font-weight:600}.b.d{border-color:var(--err);color:var(--err)}.b:disabled{opacity:.4;cursor:not-allowed}.b.on{background:color-mix(in srgb,var(--ac) 25%,var(--card));border-color:var(--ac)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.bar{height:10px;background:var(--bg2);border-radius:9px;overflow:hidden;border:1px solid var(--ln)}.bar i{display:block;height:100%;background:var(--ac)}
+table{width:100%;border-collapse:collapse;font-size:.92rem}th,td{text-align:left;padding:8px;border-bottom:1px solid var(--ln)}th{color:var(--tx2);font-weight:500}
+.tag{display:inline-block;padding:2px 10px;border-radius:99px;border:1px solid var(--ln);font-size:.82rem}.tag.ok{border-color:var(--ok);color:var(--ok)}.tag.w{border-color:var(--warn);color:var(--warn)}.tag.e{border-color:var(--err);color:var(--err)}
+.gtop{display:flex;align-items:center;gap:12px;margin-bottom:14px}.gtop .grow{flex:1}.tm{font:600 1.4rem 'Chakra Petch'}
+.gwrap{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:20px;align-items:start}
+.bwrap{width:min(100%,calc(560px*var(--bs)));margin:0 auto;position:relative}
+.board{display:grid;grid-template-columns:repeat(9,1fr);aspect-ratio:1;border:3px solid var(--ac);border-radius:10px;overflow:hidden;background:var(--card)}
+.cl{border:1px solid var(--ln);background:transparent;padding:0;font:600 clamp(18px,5vw,30px) 'Chakra Petch';position:relative;display:flex;align-items:center;justify-content:center;min-width:0;color:var(--tx)}
+[data-cp="1"] .cl{font-size:clamp(16px,4.4vw,26px)}
+.bR{border-right:2px solid var(--ac)}.bB{border-bottom:2px solid var(--ac)}.us{color:var(--ac)}.gv{color:var(--tx)}
+.rl{background:color-mix(in srgb,var(--blu) 14%,var(--card))}.mt{background:color-mix(in srgb,var(--lav) 28%,var(--card))}.sl{background:color-mix(in srgb,var(--ac) 32%,var(--card));box-shadow:inset 0 0 0 2px var(--ac)}
+.cf,.bd{color:var(--err)!important;background:color-mix(in srgb,var(--err) 16%,var(--card))}.cf::after,.bd::after{content:"✕";position:absolute;top:1px;right:3px;font:700 10px sans-serif}
+.hn{animation:pl 1s 2}@keyframes pl{50%{box-shadow:inset 0 0 0 3px var(--warn)}}
+.nt{display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);width:100%;height:100%;font:500 clamp(7px,1.8vw,11px) Outfit;color:var(--tx2);text-align:center}.nt i{font-style:normal;display:flex;align-items:center;justify-content:center}
+.pov{position:absolute;inset:0;background:var(--card);border-radius:10px;border:3px solid var(--ac);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:2}
+.pad{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px}.pad .b{font:600 1.3rem 'Chakra Petch';padding:6px;min-height:50px}
+.ctl{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.ctl .b{flex-direction:column;gap:2px;font-size:.78rem;padding:8px 4px}
+.nb{background:var(--warn);color:#0D1117;border-radius:8px;padding:6px 10px;font-weight:600;margin-bottom:10px}
+.tog{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--ln)}
+.sw{width:50px;height:28px;border-radius:99px;border:1px solid var(--ln);background:var(--bg2);position:relative;flex:none}.sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--tx2);transition:.2s}.sw[aria-checked=true]{background:var(--ac);border-color:var(--ac)}.sw[aria-checked=true]::after{left:25px;background:var(--on)}
+#m{position:fixed;inset:0;background:rgba(5,8,12,.7);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}#m[hidden]{display:none}
+.mb{background:var(--card);border:1px solid var(--ac);border-radius:16px;padding:22px;max-width:460px;width:100%;max-height:90dvh;overflow:auto}
+.t{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--card);border:1px solid var(--ln);padding:10px 16px;border-radius:10px;z-index:60;max-width:92vw}.t[hidden]{display:none}.t.ok{border-color:var(--ok)}.t.err{border-color:var(--err)}.t.warn{border-color:var(--warn)}
+.ring{width:70px;height:70px;border-radius:50%;border:4px solid var(--ac);margin:0 auto 10px;animation:rg 1.2s ease-out}@keyframes rg{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
+.ex{display:grid;grid-template-columns:repeat(9,1fr);width:min(100%,300px);border:2px solid var(--ac);border-radius:8px;overflow:hidden;aspect-ratio:1}.ex .cl{font-size:15px}
+.ld{display:flex;flex-direction:column;align-items:center;gap:12px;padding:80px 0;text-align:center}
+kbd{border:1px solid var(--ln);border-bottom-width:3px;border-radius:6px;padding:0 7px;background:var(--bg2);font-size:.85rem}
+[data-rm=on] *{animation:none!important;transition:none!important}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media(max-width:860px){.app{grid-template-columns:1fr}.sb{position:fixed;inset:0 auto 0 0;width:250px;transform:translateX(-102%);z-index:30;transition:transform .2s}.sb.open{transform:none}.mtop{display:flex}.gwrap{grid-template-columns:1fr}main{padding:14px}}
+</style></head><body>
+<div class="app"><nav class="sb" id="sb" aria-label="Main navigation"></nav><div><div class="mtop"><button class="b" id="mn" aria-label="Open menu"></button><span class="brand" style="padding:0">SudoZen</span></div><main id="main"></main></div></div>
+<div id="m" hidden></div><div class="t" id="t" role="status" aria-live="polite" hidden></div>
 <script>
-const CL={easy:38,medium:31,hard:26,expert:23},BONUS={easy:0,medium:300,hard:600,expert:900};
-const ACC={cyan:['#22d3ee','#14b8a6'],teal:['#2dd4bf','#0d9488'],ice:['#67e8f9','#06b6d4']};
-const $=id=>document.getElementById(id);
-const get=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
-const put=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
-let S=Object.assign({sound:true,hl:true,err:true,timer:true,auto:true,limit:3,acc:'cyan',theme:'dark',big:false,vib:true},get('sz_set',{}));
-let ST=Object.assign({played:0,won:0,streak:0,bestStreak:0,best:{},wins:{},time:0,daily:'',flawless:0,nohint:0,name:'',av:0,xp:0,top:[],tour:0},get('sz_stats',{}));
-let RNG=Math.random,sol,puz,val,notes,sel=-1,notesMode=false,hints=3,hintsUsed=0,mist=0,tries=0,secs=0,timer=null,paused=false,over=true,D='easy',isDaily=false,hist=[],setFrom='home';
-const fmt=s=>String(s/60|0).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
-const cap=x=>x[0].toUpperCase()+x.slice(1);
-const today=()=>{const d=new Date();return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate()};
-function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('on'));$(id).classList.add('on');if(id==='home')records()}
-let AC;function beep(f,d=.08,t='sine'){if(!S.sound)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=t;o.frequency.value=f;g.gain.value=.05;o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
-function applyAcc(){document.body.dataset.theme=S.theme;document.body.classList.toggle('bignum',S.big);const a=ACC[S.acc]||ACC.cyan;document.documentElement.style.setProperty('--cyan',a[0]);document.documentElement.style.setProperty('--teal',a[1])}
-function openSet(from){setFrom=from;$('sSound').checked=S.sound;$('sHl').checked=S.hl;$('sErr').checked=S.err;$('sTimer').checked=S.timer;$('sAuto').checked=S.auto;$('sLimit').value=S.limit;$('sAcc').value=S.acc;$('sTheme').value=S.theme;$('sBig').checked=S.big;$('sVib').checked=S.vib;show('settings')}
-function setS(){S={sound:$('sSound').checked,hl:$('sHl').checked,err:$('sErr').checked,timer:$('sTimer').checked,auto:$('sAuto').checked,limit:+$('sLimit').value,acc:$('sAcc').value,theme:$('sTheme').value,big:$('sBig').checked,vib:$('sVib').checked};put('sz_set',S);applyAcc()}
-function backSet(){show(setFrom);if(setFrom==='game'){$('tm').parentElement.style.visibility=S.timer?'visible':'hidden';render();pause(true)}}
-function records(){renderProfile();const g=get('sz_save',null);$('bCont').style.display=g?'block':'none';if(g)$('contSub').textContent=cap(g.D)+(g.daily?' (Daily)':'')+' · '+fmt(g.secs);$('dSub').textContent=ST.daily===today()?'Completed today':'A new puzzle every day'}
-function showStats(){const r=ST.played?Math.round(ST.won/ST.played*100)+'%':'0%';
-  const k=(l,v,h)=>`<div class="kpi ${h?'hi':''}"><span>${l}</span><b>${v}</b></div>`;
-  $('stGrid').innerHTML=k('Played',ST.played)+k('Won',ST.won)+k('Win rate',r,1)+k('Streak',ST.streak,1)+k('Best streak',ST.bestStreak)+k('Play time',Math.round(ST.time/60)+' min');
-  $('stDiff').innerHTML=['easy','medium','hard','expert'].map(l=>`<div class="row"><span>${cap(l)}</span><span>${ST.best[l]?fmt(ST.best[l]):'--:--'} · ${ST.wins[l]||0} wins</span></div>`).join('');
-  const A=[['First Win',ST.won>=1],['5 Wins',ST.won>=5],['25 Wins',ST.won>=25],['Flawless (no mistakes)',ST.flawless],['No Hints',ST.nohint],['3-Win Streak',ST.bestStreak>=3],['Daily Solver',!!ST.daily]];
-  $('stAch').innerHTML=A.map(a=>`<div class="ach ${a[1]?'':'lock'}"><span>${a[0]}</span><b>${a[1]?'Unlocked':'Locked'}</b></div>`).join('');$('stTop').innerHTML=ST.top.length?ST.top.map((t,i)=>`<div class="row"><span>${i+1}. ${t.n} · ${cap(t.d)}</span><b>${t.s}</b></div>`).join(''):'<div class="ach lock">No games finished yet</div>';show('stats')}
-function resetStats(){if(confirm('Reset all statistics?')){Object.assign(ST,{played:0,won:0,streak:0,bestStreak:0,best:{},wins:{},time:0,daily:'',flawless:0,nohint:0,top:[]});put('sz_stats',ST);showStats()}}
-
-const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=RNG()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
-const mul=a=>()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
-function used(g,i){let r=i/9|0,c=i%9,u=0;for(let k=0;k<9;k++)u|=(1<<g[r*9+k])|(1<<g[k*9+c]);const br=r-r%3,bc=c-c%3;for(let a=0;a<3;a++)for(let b=0;b<3;b++)u|=1<<g[(br+a)*9+bc+b];return u}
-function solve(g,lim){let best=-1,bn=10,bm=0;for(let i=0;i<81;i++)if(!g[i]){const m=~used(g,i)&0x3FE;let n=0;for(let d=1;d<=9;d++)n+=m>>d&1;if(n<bn){bn=n;best=i;bm=m}}
-  if(best<0)return 1;let t=0;for(let d=1;d<=9;d++)if(bm>>d&1){g[best]=d;t+=solve(g,lim-t);if(t>=lim)break}g[best]=0;return t}
-function makeSolved(){const d=shuf([1,2,3,4,5,6,7,8,9]),rg=()=>shuf([0,1,2]),rows=[],cols=[];
-  shuf([0,1,2]).forEach(b=>rg().forEach(r=>rows.push(b*3+r)));shuf([0,1,2]).forEach(b=>rg().forEach(c=>cols.push(b*3+c)));
-  const g=[];rows.forEach(r=>cols.forEach(c=>g.push(d[(r*3+(r/3|0)+c)%9])));return g}
-function makePuzzle(l){const s=makeSolved(),p=s.slice();let n=81;for(const i of shuf([...Array(81).keys()])){if(n<=CL[l])break;const b=p[i];p[i]=0;if(solve(p.slice(),2)!==1)p[i]=b;else n--}return[s,p]}
-
-function start(l,daily){D=l;isDaily=!!daily;RNG=daily?mul(today()):Math.random;[sol,puz]=makePuzzle(l);RNG=Math.random;
-  val=puz.slice();notes=Array.from({length:81},()=>new Set());hints=3;hintsUsed=0;mist=0;tries=0;secs=0;begin()}
-function cont(){const g=get('sz_save',null);if(!g)return;D=g.D;isDaily=g.daily;sol=g.sol;puz=g.puz;val=g.val;notes=g.notes.map(a=>new Set(a));hints=g.hints;hintsUsed=g.hu;mist=g.mist;tries=g.tries;secs=g.secs;begin()}
-function begin(){sel=-1;notesMode=false;over=false;paused=false;hist=[];
-  ['pauseOv','winOv','goOv'].forEach(x=>$(x).classList.remove('on'));$('board').classList.remove('hide');
-  $('dl').textContent=(isDaily?'Daily · ':'')+D;$('tm').parentElement.style.visibility=S.timer?'visible':'hidden';
-  $('pad').innerHTML='';for(let n=1;n<=9;n++){const b=document.createElement('button');b.id='p'+n;b.innerHTML=n+'<small id="r'+n+'"></small>';b.onclick=()=>input(n);$('pad').appendChild(b)}
-  $('bt').textContent=ST.best[D]?fmt(ST.best[D]):'—';show('game');render();clearInterval(timer);
-  timer=setInterval(()=>{if(!paused&&!over){secs++;$('tm').textContent=fmt(secs);score();if(secs%5===0)save()}},1000);$('tm').textContent=fmt(secs)}
-const calc=()=>Math.max(100,1000+BONUS[D]-secs*2-mist*50-hintsUsed*75);
-const score=()=>$('sc').textContent=calc();
-function save(){if(over)return;put('sz_save',{D,daily:isDaily,sol,puz,val,notes:notes.map(s=>[...s]),hints,hu:hintsUsed,mist,tries,secs})}
-
-function render(){const B=$('board');B.innerHTML='';const sv=sel>=0?val[sel]:0;
-  for(let i=0;i<81;i++){const d=document.createElement('div');d.className='c';
-    if(puz[i])d.classList.add('g');else if(val[i])d.classList.add('u');
-    if(sel>=0){const r=i/9|0,c=i%9,sr=sel/9|0,sc=sel%9;
-      if(S.hl){if(r===sr||c===sc||((r/3|0)===(sr/3|0)&&(c/3|0)===(sc/3|0)))d.classList.add('rel');if(sv&&val[i]===sv)d.classList.add('same')}
-      if(i===sel)d.classList.add('sel')}
-    if(S.err&&val[i]&&val[i]!==sol[i])d.classList.add('bad');
-    if(val[i])d.textContent=val[i];
-    else if(notes[i].size){let h='<div class="n">';for(let n=1;n<=9;n++)h+=`<span>${notes[i].has(n)?n:''}</span>`;d.innerHTML=h+'</div>'}
-    d.onclick=()=>{if(!paused){sel=i;render()}};B.appendChild(d)}
-  let f=0;val.forEach((v,i)=>{if(v&&v===sol[i])f++});const pct=Math.round(f/81*100);
-  $('pc').textContent=pct+'%';$('ring').style.background=`conic-gradient(var(--cyan) ${pct}%,var(--line) 0)`;
-  $('cc').textContent=f+'/81';$('ms').textContent=mist+(S.limit?' / '+S.limit:'');$('ac').textContent=(tries?Math.round((tries-mist)/tries*100):100)+'%';
-  $('hl').textContent=hints;$('bHint').textContent='Hint '+hints;$('bNotes').classList.toggle('on',notesMode);score();
-  let rem='';for(let n=1;n<=9;n++){const left=9-val.filter((v,i)=>v===n&&v===sol[i]).length;$('r'+n).textContent=left+' left';$('p'+n).classList.toggle('done',left===0);
-    rem+=`<div class="nb"><span>${n}</span><div><i style="width:${(9-left)/9*100}%"></i></div><em>${left}</em></div>`}
-  $('rem').innerHTML=rem;save();if(f===81&&!over)win()}
-
-const push=i=>hist.push({i,v:val[i],n:[...notes[i]]});
-function input(n){if(paused||over||sel<0||puz[sel])return;
-  if(notesMode){if(val[sel])return;push(sel);const s=notes[sel];s.has(n)?s.delete(n):s.add(n);beep(500);render();return}
-  push(sel);val[sel]=n;notes[sel].clear();
-  if(S.err){tries++;if(n!==sol[sel]){mist++;beep(180,.2,'square');if(S.vib&&navigator.vibrate)navigator.vibrate(80);if(S.limit&&mist>=S.limit){render();return lose()}}else{beep(660);if(S.auto)clrNotes(sel,n)}}else beep(560);
-  render()}
-function clrNotes(i,n){const r=i/9|0,c=i%9;for(let k=0;k<81;k++){const a=k/9|0,b=k%9;if(a===r||b===c||((a/3|0)===(r/3|0)&&(b/3|0)===(c/3|0)))notes[k].delete(n)}}
-function erase(){if(paused||over||sel<0||puz[sel])return;push(sel);val[sel]=0;notes[sel].clear();render()}
-function undo(){if(paused||over||!hist.length)return;const h=hist.pop();val[h.i]=h.v;notes[h.i]=new Set(h.n);sel=h.i;render()}
-function toggleNotes(){notesMode=!notesMode;render()}
-function hint(){if(paused||over||hints<=0)return;let t=sel;
-  if(t<0||puz[t]||val[t]===sol[t]){const c=[];val.forEach((v,i)=>{if(v!==sol[i])c.push(i)});if(!c.length)return;t=c[Math.random()*c.length|0]}
-  push(t);sel=t;val[t]=sol[t];notes[t].clear();clrNotes(t,sol[t]);hints--;hintsUsed++;beep(800);render()}
-function pause(p){if(over)return;paused=p;if(p)save();$('pauseOv').classList.toggle('on',p);$('board').classList.toggle('hide',p)}
-function quit(){if(!over)save();clearInterval(timer);over=true;['pauseOv','winOv','goOv'].forEach(x=>$(x).classList.remove('on'));show('home')}
-function endGame(){over=true;clearInterval(timer);try{localStorage.removeItem('sz_save')}catch(e){}}
-function lose(){endGame();ST.played++;ST.streak=0;ST.time+=secs;put('sz_stats',ST);setTimeout(()=>$('goOv').classList.add('on'),300)}
-function win(){endGame();const pb=!ST.best[D]||secs<ST.best[D];
-  ST.played++;ST.won++;ST.streak++;ST.bestStreak=Math.max(ST.bestStreak,ST.streak);ST.time+=secs;ST.wins[D]=(ST.wins[D]||0)+1;
-  if(pb)ST.best[D]=secs;if(mist===0&&S.err)ST.flawless=1;if(hintsUsed===0)ST.nohint=1;if(isDaily)ST.daily=today();const gain=Math.round(calc()/10)+(isDaily?50:0),l0=lvl();ST.xp+=gain;ST.top.push({n:ST.name||'Player',s:calc(),d:D,t:secs});ST.top.sort((a,b)=>b.s-a.s);ST.top=ST.top.slice(0,5);put('sz_stats',ST);lastRes={gain,up:lvl()>l0,s:calc(),t:secs,m:mist};
-  $('wt').textContent=fmt(secs);$('wm').textContent=mist;$('wh').textContent=hintsUsed;$('ws').textContent=calc();
-  $('wmsg').textContent=pb?'New personal best on '+D+'!':(mist===0&&hintsUsed===0?'Perfect run!':'Well done! Aim for fewer mistakes next time.');
-  $('wxp').textContent='+'+lastRes.gain+' XP'+(lastRes.up?' · Level up! You are now level '+lvl():'');beep(523,.12);setTimeout(()=>beep(659,.12),130);setTimeout(()=>beep(784,.25),260);setTimeout(()=>$('winOv').classList.add('on'),400)}
-document.addEventListener('keydown',e=>{if(!$('game').classList.contains('on'))return;const k=e.key.toLowerCase();
-  if(k>='1'&&k<='9')input(+k);else if(k==='backspace'||k==='delete')erase();else if(k==='n')toggleNotes();else if(k==='u')undo();
-  else if(k.startsWith('arrow')&&!paused){e.preventDefault();if(sel<0)sel=40;if(!((k==='arrowleft'&&sel%9===0)||(k==='arrowright'&&sel%9===8))){const n=sel+{arrowup:-9,arrowdown:9,arrowleft:-1,arrowright:1}[k];if(n>=0&&n<81)sel=n}render()}});
-document.addEventListener('visibilitychange',()=>{if(document.hidden&&$('game').classList.contains('on')&&!over)pause(true)});
-
-let lastRes={},tourI=0,pfAvSel=0,pfFirst=false;
-const AV=['#22d3ee','#14b8a6','#a78bfa','#f59e0b','#f43f5e','#84cc16'],RANKS=['Novice','Solver','Strategist','Expert','Master','Zen Master'];
-const lvl=()=>Math.floor(ST.xp/300)+1,rank=()=>RANKS[Math.min(5,(lvl()-1)/2|0)];
-const avatar=(c,n)=>`<span class="av" style="background:${AV[c]}">${((n||'P')[0]||'P').toUpperCase()}</span>`;
-function renderProfile(){const p=$('pcard');if(!p)return;p.innerHTML=avatar(ST.av,ST.name)+`<div class="pi"><b>${ST.name||'Player'}</b><small>Level ${lvl()} · ${rank()} · ${ST.xp%300}/300 XP</small><div class="xp"><i style="width:${(ST.xp%300)/3}%"></i></div></div>`}
-function pfPrev(){const n=$('pfName').value.trim();$('pfPrev').innerHTML=avatar(pfAvSel,n)}
-function openProfile(first){pfFirst=first===true;pfAvSel=ST.av;$('pfName').value=ST.name;
-  $('pfAv').innerHTML=AV.map((c,i)=>`<span class="av ${i===pfAvSel?'on':''}" style="background:${c}" onclick="pfAvSel=${i};openProfileKeep()"></span>`).join('');pfPrev();$('pfOv').classList.add('on')}
-function openProfileKeep(){const n=$('pfName').value;openProfile(pfFirst);$('pfName').value=n;pfPrev()}
-function saveProfile(){ST.name=$('pfName').value.trim()||'Player';ST.av=pfAvSel;put('sz_stats',ST);$('pfOv').classList.remove('on');renderProfile();if(pfFirst&&!ST.tour)tour()}
-const TOUR=[['Welcome to SudoZen','Fill the grid so every row, column, and 3×3 box has the numbers 1–9 once.'],['Smart tools','Use Notes for possible numbers, Undo to take back a move, and up to 3 Hints per game.'],['Your dashboard','Track time, score, accuracy, progress, and how many of each number are left.'],['Play and grow','Finish daily challenges, earn XP, level up, and unlock achievements.']];
-function tour(){tourI=0;tourShow();$('tourOv').classList.add('on')}
-function tourShow(){$('tStep').textContent='STEP '+(tourI+1)+' OF '+TOUR.length;$('tTitle').textContent=TOUR[tourI][0];$('tText').textContent=TOUR[tourI][1];$('tNext').textContent=tourI===TOUR.length-1?'Start Playing':'Next'}
-function tourNext(){if(tourI>=TOUR.length-1)return tourEnd();tourI++;tourShow()}
-function tourEnd(){ST.tour=1;put('sz_stats',ST);$('tourOv').classList.remove('on')}
-function shareRes(){const t=`I solved a ${isDaily?'Daily ':''}${D} puzzle on SudoZen in ${fmt(lastRes.t)} with a score of ${lastRes.s} and ${lastRes.m} mistakes! Try it: ${location.href} #ThisIsDNSCIT #HCI2`;
-  if(navigator.share)navigator.share({text:t}).catch(()=>{});else if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>alert('Result copied. Paste it in your post!'));else prompt('Copy your result:',t)}
-function clearData(){if(confirm('Delete ALL saved data (profile, stats, settings, saved game)?')){try{localStorage.clear()}catch(e){}location.reload()}}
-function init(){setTimeout(()=>{$('splash').classList.add('off');setTimeout(()=>{$('splash').remove();if(!ST.name)openProfile(true);else if(!ST.tour)tour()},400)},1500)}
-applyAcc();init();
-</script>
-</body>
-</html>
+const $=s=>document.querySelector(s);
+const sg=(k,d)=>{try{const v=JSON.parse(localStorage.getItem('sz_'+k));return v==null?d:v}catch{return d}},ss=(k,v)=>{try{localStorage.setItem('sz_'+k,JSON.stringify(v))}catch{}};
+const P={home:"M3 11l9-8 9 8M5 10v10h14V10",play:"M7 4l13 8-13 8z",cal:"M4 6h16v14H4zM4 10h16M8 3v4M16 3v4",clock:"M12 3a9 9 0 100 18 9 9 0 000-18zM12 7v5l3 2",chart:"M4 20V10M10 20V4M16 20v-8M22 20H2",cup:"M7 4h10v5a5 5 0 01-10 0zM7 6H4v2a3 3 0 003 3M17 6h3v2a3 3 0 01-3 3M12 14v4M8 20h8",book:"M4 5h7a2 2 0 012 2v13a2 2 0 00-2-2H4zM20 5h-7v15h7z",gear:"M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M14 4v4M8 10v4M16 16v4",info:"M12 3a9 9 0 100 18 9 9 0 000-18zM12 11v6M12 7.5v.5",undo:"M9 14L4 9l5-5M4 9h10a6 6 0 010 12h-3",redo:"M15 14l5-5-5-5M20 9H10a6 6 0 000 12h3",era:"M20 20H9L4 15l10-10 6 6-7 7",pen:"M4 20l1-5L16 4l4 4L9 19z",bulb:"M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5V16h8v-2.5A6 6 0 0012 3z",pause:"M8 5v14M16 5v14",chk:"M5 12l5 5 9-10",rot:"M4 12a8 8 0 108-8H7M7 1v6h6",menu:"M4 6h16M4 12h16M4 18h16",back:"M15 5l-7 7 7 7",eye:"M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 9a3 3 0 100 6 3 3 0 000-6z",plus:"M12 5v14M5 12h14"};
+const ic=n=>`<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="${P[n]}"/></svg>`;
+const logo=(s=36)=>`<svg width="${s}" height="${s}" viewBox="0 0 40 40" aria-hidden="true"><path d="M31 11A15 15 0 1 0 35 22" fill="none" stroke="var(--lav)" stroke-width="2.5" stroke-linecap="round"/>${[...Array(9)].map((_,i)=>`<rect x="${11+i%3*7}" y="${11+(i/3|0)*7}" width="5" height="5" rx="1" fill="${i==4?'var(--ac)':'currentColor'}" opacity="${i==4?1:.55}"/>`).join('')}</svg>`;
+/* ---------- engine ---------- */
+const rng=a=>()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const hash=s=>{let h=2166136261;for(const c of s)h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0};
+const shuf=(a,R)=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const ok=(g,i,v)=>{const r=i/9|0,c=i%9;for(let k=0;k<9;k++)if(g[r*9+k]===v||g[k*9+c]===v)return false;const br=r-r%3,bc=c-c%3;for(let a=0;a<3;a++)for(let b=0;b<3;b++)if(g[(br+a)*9+bc+b]===v)return false;return true};
+const cands=(g,i)=>{const m=[];for(let v=1;v<=9;v++)if(ok(g,i,v))m.push(v);return m};
+const fill=(g,R)=>{const i=g.indexOf(0);if(i<0)return true;for(const v of shuf([1,2,3,4,5,6,7,8,9],R))if(ok(g,i,v)){g[i]=v;if(fill(g,R))return true;g[i]=0}return false};
+const count=(g,lim)=>{let b=-1,bc=null;for(let i=0;i<81;i++)if(!g[i]){const c=cands(g,i);if(!c.length)return 0;if(!bc||c.length<bc.length){b=i;bc=c;if(c.length===1)break}}if(b<0)return 1;let n=0;for(const v of bc){g[b]=v;n+=count(g,lim-n);g[b]=0;if(n>=lim)break}return n};
+const unit=u=>{const k=u%9,t=u/9|0,a=[];for(let j=0;j<9;j++)a.push(t===0?k*9+j:t===1?j*9+k:((k/3|0)*3+(j/3|0))*9+(k%3)*3+j%3);return a};
+const logic=(p,h)=>{const g=p.slice();let ch=1;while(ch){ch=0;for(let i=0;i<81;i++)if(!g[i]){const c=cands(g,i);if(c.length===1){g[i]=c[0];ch=1}}
+if(h&&!ch)for(let u=0;u<27&&!ch;u++){const cs=unit(u);for(let v=1;v<=9&&!ch;v++){if(cs.some(i=>g[i]===v))continue;const w=cs.filter(i=>!g[i]&&ok(g,i,v));if(w.length===1){g[w[0]]=v;ch=1}}}}return g.every(Boolean)};
+/* Difficulty = clue target + required technique: Easy needs only naked singles, Medium adds hidden singles, Hard/Expert are sparser (unique solution always verified). */
+function gen(d,seed){const R=rng(seed??Math.floor(Math.random()*4294967296)),sol=Array(81).fill(0);fill(sol,R);const p=sol.slice(),T={easy:40,medium:34,hard:29,expert:24}[d];let cl=81;
+for(const i of shuf([...Array(81).keys()],R)){if(cl<=T)break;const v=p[i];p[i]=0;if(count(p.slice(),2)!==1||(d==='easy'&&!logic(p,0))||(d==='medium'&&!logic(p,1)))p[i]=v;else cl--}return{puz:p,sol}}
+const peers=i=>{const r=i/9|0,c=i%9,a=[];for(let j=0;j<81;j++){if(j===i)continue;const q=j/9|0,w=j%9;if(q===r||w===c||((q/3|0)===(r/3|0)&&(w/3|0)===(c/3|0)))a.push(j)}return a};
+/* ---------- state ---------- */
+const DEF={theme:'dark',acc:'teal',compact:0,diff:'easy',auto:1,match:1,rel:1,autoN:1,cRes:1,cNew:1,hc:0,rm:0,size:100,snd:0,tim:1};
+let S=Object.assign({},DEF,sg('set',{}));
+let H=sg('hist',[]);H=Array.isArray(H)?H.filter(h=>h&&typeof h.time==='number'&&h.diff&&h.res):[];
+let ST=sg('st',{started:0});if(!ST||typeof ST.started!=='number')ST={started:0};
+let AC=sg('ach',{});if(!AC||typeof AC!=='object')AC={};
+const okG=g=>g&&['puz','sol','cur','notes'].every(k=>Array.isArray(g[k])&&g[k].length===81)&&typeof g.el==='number';
+let G=sg('game',null);if(!okG(G))G=null;else{G.mist|=0;G.hints|=0}
+let BK=null,LAST=null,sel=-1,notesOn=false,route='home',busy=false,QI=Math.floor(Math.random()*6),undo=[],redo=[],bad=new Set(),flash=-1,INFO='',nm='classic',nd=S.diff,mres=null,EX=null,tt,ac;
+const D={easy:'Easy',medium:'Medium',hard:'Hard',expert:'Expert'},MD={classic:'Classic',zen:'Zen',challenge:'Challenge'};
+const QS=['Clarity begins when you slow down.','One square at a time. One thought at a time.','The solution is closer than you think.','Patience turns patterns into possibilities.','Focus on the next number, not the entire puzzle.','A calm mind sees what a rushed mind misses.'];
+const today=()=>new Date().toLocaleDateString('en-CA'),fm=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+const dDiff=()=>['easy','easy','medium','medium','hard','hard','expert'][new Date().getDay()];
+const sv=()=>{if(G&&!G.tut)ss('game',G)},W=()=>H.filter(h=>h.res==='won');
+function dayStreak(){const d=[...new Set(W().map(h=>new Date(h.t).toLocaleDateString('en-CA')))].sort();let b=d.length?1:0,r=1;for(let i=1;i<d.length;i++){r=(new Date(d[i])-new Date(d[i-1]))/864e5===1?r+1:1;b=Math.max(b,r)}return b}
+const AL=[['first','First Steps','Complete your first puzzle.',()=>[W().length,1]],['zen','Zen Beginner','Complete an Easy puzzle.',()=>[W().filter(h=>h.diff==='easy').length,1]],['five','Pattern Seeker','Complete five puzzles.',()=>[W().length,5]],['daily','Daily Focus','Complete a daily challenge.',()=>[W().filter(h=>h.daily).length,1]],['flaw','Flawless Mind','Complete a Classic or Challenge puzzle with no mistakes.',()=>[W().filter(h=>!h.mist&&h.mode!=='zen').length,1]],['streak','Consistent Thinker','Complete puzzles on 2 days in a row.',()=>[dayStreak(),2]],['expert','Master of Patterns','Complete an Expert puzzle.',()=>[W().filter(h=>h.diff==='expert').length,1]]];
+function sts(){const w=W(),n=w.length;let cur=0;for(const h of H){if(h.res==='won')cur++;else break}let bst=0,run=0;for(const h of [...H].reverse()){h.res==='won'?bst=Math.max(bst,++run):run=0}return{n,cur,bst,avg:n?Math.round(w.reduce((a,h)=>a+h.time,0)/n):0}}
+function rec(res){if(G.tut)return;H.unshift({id:G.id,t:Date.now(),mode:G.mode,diff:G.diff,daily:G.daily||'',res,time:G.el,mist:G.mist,hints:G.hints});H=H.slice(0,300);ss('hist',H)}
+function ach(){const nw=[];AL.forEach(a=>{const[c,m]=a[3]();if(!AC[a[0]]&&c>=m){AC[a[0]]=Date.now();nw.push(a[1])}});ss('ach',AC);return nw}
+function beep(f){if(!S.snd)return;try{ac=ac||new AudioContext();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=f;g.gain.value=.04;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+.12)}catch{}}
+function toast(m,k='ok'){const t=$('#t');t.className='t '+k;t.textContent=(k==='err'?'✕ ':k==='warn'?'! ':'✓ ')+m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,3400)}
+const modal=h=>{$('#m').innerHTML=`<div class="mb" role="dialog" aria-modal="true">${h}</div>`;$('#m').hidden=false;$('#m .b')?.focus()},closeM=()=>{$('#m').hidden=true;$('#m').innerHTML=''};
+const ask=(t,m,o)=>new Promise(r=>{mres=r;modal(`<h2>${t}</h2><p>${m}</p><div class="row"><button class="b" data-do="mr:0">Cancel</button><button class="b p" data-do="mr:1">${o}</button></div>`)});
+const go=r=>{if(location.hash==='#'+r)render();else location.hash=r};
+/* ---------- game actions ---------- */
+async function begin(mode,diff,daily){if(G&&!G.tut&&!G.done){if(daily&&G.daily===daily)return go('game');if(S.cNew&&!await ask('Start a new game?',`Your unfinished ${D[G.diff]} puzzle will be marked abandoned in your history. Abandoning ends your current win streak.`,'Abandon and start new'))return;rec('abandoned')}
+busy=true;render();setTimeout(()=>{const r=gen(diff,daily?hash(daily):undefined);G={id:Date.now(),mode,diff,daily:daily||'',puz:r.puz,sol:r.sol,cur:r.puz.slice(),notes:Array(81).fill(0),el:0,paused:0,mist:0,hints:0,done:0};ST.started++;ss('st',ST);sv();undo=[];redo=[];sel=-1;notesOn=false;bad=new Set();INFO='';busy=false;go('game')},40)}
+const snap=()=>{undo.push({c:G.cur.slice(),n:G.notes.slice()});if(undo.length>150)undo.shift();redo=[]};
+const tut=n=>{if(G&&G.tut&&G.tutS===n)G.tutS++};
+const live=()=>G&&!G.paused&&!G.done;
+function put(v){if(!live()||sel<0)return toast('Select an empty cell first.','warn');const g=G;if(g.puz[sel])return toast('Clue numbers are part of the puzzle and can’t be changed.','warn');
+bad.clear();flash=-1;
+if(notesOn){if(g.cur[sel])return toast('Erase this cell first to add notes.','warn');snap();g.notes[sel]^=1<<v;tut(2)}
+else{if(g.cur[sel]===v)return;snap();g.cur[sel]=v;g.notes[sel]=0;if(S.autoN)peers(sel).forEach(j=>g.notes[j]&=~(1<<v));
+if(v!==g.sol[sel]&&g.mode!=='zen'){g.mist++;beep(180);toast('That number doesn’t match the solution. Mistake added.','err')}else beep(520);tut(1);
+if(g.mode==='challenge'&&g.mist>=3)return lose();if(g.cur.every((x,i)=>x===g.sol[i]))return win()}
+sv();draw()}
+function erase(){if(!live()||sel<0||G.puz[sel])return;if(!G.cur[sel]&&!G.notes[sel])return;snap();G.cur[sel]=0;G.notes[sel]=0;bad.clear();sv();draw()}
+function win(){const g=G,pb=Math.min(Infinity,...W().filter(h=>h.diff===g.diff&&h.id!==g.id).map(h=>h.time));g.done=1;
+if(g.tut){G=BK;BK=null;toast('Practice puzzle solved. Nice work!');return go('howto')}
+rec('won');const nw=ach();ss('game',null);G=null;beep(660);go('home');
+modal(`<div class="ring"></div><h2 style="text-align:center">Puzzle solved!</h2><table><tr><th>Time</th><td>${fm(g.el)}</td></tr><tr><th>Difficulty</th><td>${D[g.diff]}${g.daily?' (Daily)':''}</td></tr><tr><th>Mistakes</th><td>${g.mist}</td></tr><tr><th>Hints used</th><td>${g.hints}</td></tr><tr><th>Personal best</th><td>${pb===Infinity?'First '+D[g.diff]+' win — new best!':g.el<pb?'New best! (was '+fm(pb)+')':fm(pb)+' · '+fm(g.el-pb)+' slower'}</td></tr></table>${nw.length?`<p style="margin-top:10px">Achievement unlocked: <b style="color:var(--ac)">${nw.join(', ')}</b></p>`:''}<div class="row"><button class="b p" data-do="again:${g.daily?'classic':g.mode}:${g.diff}">Play again</button><button class="b" data-do="cm">Home</button><button class="b" data-do="cm:stats">Statistics</button></div>`)}
+function lose(){rec('lost');const g=G;ss('game',null);G=null;go('home');modal(`<h2>Out of mistakes</h2><p>Challenge mode allows 3 mistakes. This puzzle was recorded as lost and ends your win streak. Try again with a fresh grid.</p><div class="row"><button class="b p" data-do="again:challenge:${g.diff}">Try again</button><button class="b" data-do="cm">Home</button></div>`)}
+function hint(){if(!live())return;const g=G;if(g.mode==='challenge'&&g.hints>=3)return toast('Challenge mode allows 3 hints. You’ve used them all.','warn');
+const i=sel>=0&&!g.puz[sel]&&g.cur[sel]!==g.sol[sel]?sel:g.cur.findIndex((v,k)=>v!==g.sol[k]);if(i<0)return;snap();const v=g.sol[i],n=cands(g.cur.map((x,k)=>k===i?0:x),i).length;
+g.cur[i]=v;g.notes[i]=0;g.hints++;sel=i;flash=i;bad.clear();INFO=`Hint used: row ${(i/9|0)+1}, column ${i%9+1} is ${v}. `+(n===1?'It is the only number its row, column and box allow.':`Its row, column and box already rule out ${9-n} numbers, and ${v} completes the cell.`);toast('Hint placed — the cell is highlighted.','warn');tut(3);
+if(g.cur.every((x,k)=>x===g.sol[k]))return win();sv();draw()}
+function check(){if(!live())return;bad=new Set();G.cur.forEach((v,i)=>{if(v&&!G.puz[i]&&v!==G.sol[i])bad.add(i)});toast(bad.size?`${bad.size} cell${bad.size>1?'s don’t':' doesn’t'} match the solution (marked ✕).`:'No mistakes so far. Keep going!',bad.size?'err':'ok');draw()}
+const A={go,mr:v=>{closeM();if(mres){const r=mres;mres=null;r(!!+v)}},cm:r=>{closeM();if(r)go(r)},sel:i=>{if(!live())return;sel=+i;tut(0);draw()},num:v=>put(+v),erase,hint,check,
+undo:()=>{if(!live()||!undo.length)return;redo.push({c:G.cur.slice(),n:G.notes.slice()});const s=undo.pop();G.cur=s.c;G.notes=s.n;bad.clear();sv();draw()},
+redo:()=>{if(!live()||!redo.length)return;undo.push({c:G.cur.slice(),n:G.notes.slice()});const s=redo.pop();G.cur=s.c;G.notes=s.n;bad.clear();sv();draw()},
+notes:()=>{if(!live())return;notesOn=!notesOn;toast(notesOn?'Notes mode on — numbers become pencil marks.':'Notes mode off.','warn');draw()},
+pause:()=>{if(!G||G.done)return;G.paused=G.paused?0:1;sv();draw()},
+async restart(){if(S.cRes&&!await ask('Restart this puzzle?','Your entries, notes, timer, mistakes and hints will reset. The same puzzle stays and it isn’t counted as a new game.','Restart puzzle'))return;Object.assign(G,{cur:G.puz.slice(),notes:Array(81).fill(0),el:0,mist:0,hints:0,paused:0});undo=[];redo=[];bad.clear();INFO='';sv();draw()},
+async newg(){begin(G.mode,G.diff,'')},
+play:(m,d)=>begin(m,d,''),again:(m,d)=>{closeM();begin(m,d,'')},cont:()=>go('game'),daily:()=>begin('classic',dDiff(),today()),
+nmode:m=>{nm=m;render()},ndiff:d=>{nd=d;render()},go2:()=>begin(nm,nd,''),qn:()=>{QI=(QI+1)%6;render()},
+tog:k=>{S[k]=S[k]?0:1;ss('set',S);render()},set:(k,v)=>{S[k]=isNaN(v)?v:+v;ss('set',S);if(k==='diff')nd=S.diff;render()},
+tutor:()=>{BK=G;const r=gen('easy',2024);G={tut:1,tutS:0,id:0,mode:'zen',diff:'easy',daily:'',puz:r.puz,sol:r.sol,cur:r.puz.slice(),notes:Array(81).fill(0),el:0,paused:0,mist:0,hints:0,done:0};undo=[];redo=[];sel=-1;notesOn=false;bad.clear();INFO='';go('game')},
+tutx:()=>{G=BK;BK=null;notesOn=false;go('howto')},
+exp:()=>{const j=JSON.stringify({started:ST.started,history:H,achievements:AC},null,1);modal(`<h2>Export statistics</h2><p>Copy this JSON and save it in a file. Downloads aren’t available inside this page.</p><textarea id="ex" readonly rows="8" style="width:100%;background:var(--bg2);color:var(--tx);border:1px solid var(--ln);border-radius:8px;padding:8px">${j.replace(/</g,'&lt;')}</textarea><div class="row"><button class="b p" data-do="cp">Copy</button><button class="b" data-do="cm">Close</button></div>`)},
+cp:()=>{const t=$('#ex');t.select();try{navigator.clipboard.writeText(t.value);toast('Copied to clipboard.')}catch{document.execCommand('copy');toast('Selected — press Ctrl+C to copy.','warn')}},
+async rst(){if(await ask('Reset statistics?','This permanently erases your game history, statistics, daily challenge records and achievements. Settings and any unfinished game are kept.','Erase statistics')){H=[];ST={started:0};AC={};ss('hist',H);ss('st',ST);ss('ach',AC);toast('Statistics reset.');render()}},
+async clr(){if(await ask('Clear saved game?','This deletes your unfinished puzzle, including entries, notes and timer. Statistics are not affected.','Delete saved game')){G=null;ss('game',null);toast('Saved game cleared.');render()}}};
+document.addEventListener('click',e=>{const t=e.target.closest('[data-do]');if(t){const[f,...a]=t.dataset.do.split(':');A[f]?.(...a)}if(e.target.id==='mn'||e.target.closest('#mn'))$('#sb').classList.toggle('open')});
+document.addEventListener('keydown',e=>{if(!$('#m').hidden){if(e.key==='Escape')mres?A.mr(0):closeM();return}
+if(route!=='game'||!G||e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key;
+if(/^[1-9]$/.test(k))put(+k);else if(k==='Backspace'||k==='Delete'||k==='0')erase();else if(k.startsWith('Arrow')&&live()){const d={ArrowUp:-9,ArrowDown:9,ArrowLeft:-1,ArrowRight:1}[k];let s=sel<0?40:sel+d;if((k==='ArrowLeft'&&sel%9===0)||(k==='ArrowRight'&&sel%9===8)||s<0||s>80)s=sel;sel=s;draw()}
+else if('nN'.includes(k))A.notes();else if('hH'.includes(k))hint();else if('zZ'.includes(k))A.undo();else if('yY'.includes(k))A.redo();else if('pP'.includes(k))A.pause();else return;e.preventDefault()});
+setInterval(()=>{if(G&&route==='game'&&!G.paused&&!G.done&&!document.hidden&&$('#m').hidden){G.el++;const t=$('#tm');if(t)t.textContent=fm(G.el);sv()}},1000);
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&G&&route==='game'&&!G.done&&!G.paused){G.paused=1;sv()}else if(route==='game')draw()});
+/* ---------- views ---------- */
+const nav=[['home','Home','home'],['new','New Game','plus'],['daily','Daily Challenge','cal'],['history','Game History','clock'],['stats','Statistics','chart'],['awards','Achievements','cup'],['howto','How to Play','book'],['prefs','Settings','gear'],['about','About','info']];
+$('#sb').innerHTML=`<div class="brand">${logo(34)}SudoZen</div>`+nav.map(n=>`<a class="nv" data-r="${n[0]}" href="#${n[0]}">${ic(n[2])}${n[1]}</a>`).join('');$('#mn').innerHTML=ic('menu');
+const dailyState=()=>H.some(h=>h.daily===today()&&h.res==='won')?['Completed','ok']:G&&G.daily===today()?['In progress','w']:['Not started','e'];
+const stat=(l,v,s='')=>`<div class="cd"><div class="sm">${l}</div><div class="big">${v}</div><div class="sm">${s}</div></div>`;
+const empty=(m,b)=>`<div class="cd" style="text-align:center"><p>${m}</p>${b||''}</div>`;
+const resTag=r=>r==='won'?'<span class="tag ok">✓ Won</span>':r==='lost'?'<span class="tag e">✕ Lost</span>':'<span class="tag w">Abandoned</span>';
+function bd(g,s,lv){const v=s>=0?g.cur[s]:0,r=s/9|0,c=s%9;let h='';for(let i=0;i<81;i++){const ir=i/9|0,ic2=i%9,x=g.cur[i],rel=S.rel&&s>=0&&i!==s&&(ir===r||ic2===c||((ir/3|0)===(r/3|0)&&(ic2/3|0)===(c/3|0))),mt=S.match&&v&&x===v&&i!==s,cf=S.auto&&x&&!g.puz[i]&&peers(i).some(j=>g.cur[j]===x);
+const cl=['cl',g.puz[i]?'gv':x?'us':'',i===s?'sl':'',rel?'rl':'',mt?'mt':'',cf?'cf':'',bad.has(i)?'bd':'',flash===i?'hn':'',ic2%3===2&&ic2<8?'bR':'',ir%3===2&&ir<8?'bB':''].join(' ');
+const lab=`Row ${ir+1}, column ${ic2+1}, ${x?(g.puz[i]?'clue ':'')+x:'empty'}${cf?', conflicts with another number':''}${bad.has(i)?', incorrect':''}`;
+const inn=x?x:g.notes[i]?'<span class="nt">'+[1,2,3,4,5,6,7,8,9].map(n=>`<i>${g.notes[i]&(1<<n)?n:''}</i>`).join('')+'</span>':'';
+h+=lv?`<button class="${cl}" data-c="${i}" data-do="sel:${i}" aria-label="${lab}">${inn}</button>`:`<div class="${cl}">${inn}</div>`}return h}
+const TS=['Tap any empty cell to select it. Its row, column and box light up.','Now tap a number on the pad to place it.','Turn on Notes (key N), pick a cell, then tap a number to pencil in a candidate.','Stuck? Tap Hint (key H) to reveal one correct number and see why.','You’re ready! Finish this practice grid or leave any time.'];
+function pGame(){const g=G,cb=(a,i,l,t,on,dis)=>`<button class="b${on?' on':''}" data-do="${a}" title="${t}" aria-label="${t}"${on!==undefined?` aria-pressed="${!!on}"`:''}${dis?' disabled':''}>${ic(i)}<span>${l}</span></button>`;
+const cnt=v=>g.cur.filter(x=>x===v).length,ch=g.mode==='challenge';
+return`<div class="gtop"><button class="b" data-do="go:home" aria-label="Back to dashboard">${ic('back')}</button><div class="grow"><h2 style="margin:0">${g.tut?'Practice':g.daily?'Daily Challenge':MD[g.mode]+' mode'}</h2><span class="sm">${D[g.diff]}${g.paused?' · Paused':''}</span></div>${g.mode==='zen'&&!S.tim?'':`<span class="tm" id="tm" aria-label="Elapsed time">${fm(g.el)}</span>`}<button class="b" data-do="pause" aria-label="${g.paused?'Resume':'Pause'}">${ic(g.paused?'play':'pause')}</button></div>
+${g.tut?`<div class="cd" style="margin-bottom:12px;border-color:var(--lav)"><b>Step ${Math.min(g.tutS+1,4)} of 4:</b> ${TS[g.tutS]||TS[4]} <button class="b" data-do="tutx" style="margin-left:8px">Exit practice</button></div>`:''}
+<div class="gwrap"><div class="bwrap"><div class="board" role="grid" aria-label="Sudoku board"${g.paused?' inert':''}>${bd(g,sel,1)}</div>${g.paused?`<div class="pov"><h2>Paused</h2><p>The timer is stopped and the board is hidden.</p><button class="b p" data-do="pause">${ic('play')}Resume</button></div>`:''}</div>
+<aside><div class="cd" style="margin-bottom:10px"><div class="row" style="margin:0 0 8px">${g.mode==='zen'?'<span class="tag ok">Zen: mistakes not counted</span>':`<span class="tag ${g.mist?'e':''}">Mistakes: ${g.mist}${ch?'/3':''}</span>`}<span class="tag ${g.hints?'w':''}">Hints: ${g.hints}${ch?'/3':''}</span></div>${notesOn?'<div class="nb">✎ Notes mode ON</div>':''}<p class="sm" style="margin:0" id="ginfo">${INFO||'Select a cell, then choose a number. Keyboard: 1–9, arrows, Backspace.'}</p></div>
+<div class="pad">${[1,2,3,4,5,6,7,8,9].map(v=>`<button class="b" data-do="num:${v}" aria-label="Enter ${v}"${cnt(v)>=9?' disabled':''}>${v}</button>`).join('')}<button class="b" data-do="erase" aria-label="Clear selected cell">${ic('era')}</button></div>
+<div class="ctl">${cb('undo','undo','Undo','Undo (Z)',undefined,!undo.length)}${cb('redo','redo','Redo','Redo (Y)',undefined,!redo.length)}${cb('erase','era','Erase','Erase cell (Backspace)')}${cb('notes','pen','Notes','Toggle notes (N)',notesOn)}${cb('hint','bulb','Hint','Reveal a hint (H)')}${cb('check','chk','Check','Check for mistakes')}${cb('tog:auto','eye','Conflicts','Highlight conflicting numbers',!!S.auto)}${g.tut?'':cb('restart','rot','Restart','Restart this puzzle')+cb('newg','plus','New game','Start a new game')}</div></aside></div>`}
+function draw(){if(route!=='game'||!G)return;const f=document.activeElement?.dataset?.c;$('#main').innerHTML=pGame();if(f)$(`[data-c="${f}"]`)?.focus()}
+const pages={
+home(){const s=sts(),g=G&&!G.tut&&!G.done?G:null,[ds,dc]=dailyState(),tot=Math.max(1,s.n);
+return`<div class="hero">${logo(64)}<div style="flex:1;min-width:230px"><h1>Welcome back, Sudoku Explorer.</h1><p>Take a breath, clear your mind, and discover the satisfying rhythm of every number.</p><div class="row" style="margin:0">${g?`<button class="b p" data-do="cont">${ic('play')}Continue Playing · ${D[g.diff]} ${fm(g.el)}</button>`:`<button class="b p" data-do="go:new">${ic('plus')}Start New Game</button>`}</div></div><div class="sm">${new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})}<br>Guest profile</div></div>
+<div class="gr">${stat('Games played',ST.started,ST.started?'started':'Your first puzzle awaits')}${stat('Completed',s.n,s.n?'':'Solve one to begin')}${stat('Win streak',s.cur,'Best: '+s.bst)}${stat('Avg. time',s.n?fm(s.avg):'—',s.n?'per win':'No wins yet')}${stat('Daily challenge',`<span class="tag ${dc}" style="font-size:1rem">${ds}</span>`)}</div>
+<div class="gr2"><div class="cd"><h2>Daily challenge</h2><p>${today()} · ${D[dDiff()]}</p><p>Reward: unlocks <b>Daily Focus</b> on your first completion.</p><button class="b p" data-do="daily">${ic('cal')}${ds==='In progress'?'Resume':ds==='Completed'?'Replay':'Start'} daily</button></div>
+<div class="cd"><h2>Reflection</h2><p style="font-size:1.15rem;color:var(--tx)">“${QS[QI]}”</p><p class="sm">SudoZen Reflection</p><button class="b" data-do="qn">Another reflection</button></div></div>
+<div class="gr2"><div class="cd"><h2>Completed by difficulty</h2>${Object.keys(D).map(d=>{const n=W().filter(h=>h.diff===d).length;return`<div class="sm">${D[d]} — ${n}</div><div class="bar" role="img" aria-label="${D[d]}: ${n} completed"><i style="width:${n/tot*100}%"></i></div>`}).join('<div style="height:8px"></div>')}</div>
+<div class="cd"><h2>Recent activity</h2>${H.length?H.slice(0,5).map(h=>`<div class="tog"><span>${D[h.diff]} · ${MD[h.mode]}${h.daily?' · Daily':''}</span>${resTag(h.res)}</div>`).join(''):'<p>Nothing yet. Finished puzzles appear here.</p>'}</div></div>
+<h2>Quick actions</h2><div class="row"><button class="b" data-do="play:classic:easy">Start Easy Game</button><button class="b" data-do="play:classic:medium">Start Medium Game</button><button class="b" data-do="play:classic:hard">Start Hard Game</button><button class="b" data-do="cont"${g?'':' disabled'}>Continue Game</button><button class="b" data-do="daily">Daily Challenge</button><button class="b" data-do="go:stats">View Statistics</button></div>
+<p class="sm" style="margin-top:18px">New here? <a href="#howto" style="color:var(--ac)">How to Play</a> · <a href="#prefs" style="color:var(--ac)">Settings</a> · <a href="#about" style="color:var(--ac)">About</a></p>`},
+new(){const md={classic:'Traditional rules. Timer, mistakes and unlimited hints.',zen:'No pressure. Mistakes aren’t counted; the timer can be hidden in Settings.',challenge:'Lose after 3 mistakes. Only 3 hints.'};
+return`<h1>New game</h1><h2>Mode</h2><div class="gr">${Object.keys(MD).map(m=>`<button class="cd b${nm===m?' on':''}" data-do="nmode:${m}" aria-pressed="${nm===m}" style="flex-direction:column;align-items:flex-start;text-align:left"><b>${MD[m]}</b><span class="sm">${md[m]}</span></button>`).join('')}</div>
+<h2>Difficulty</h2><div class="row">${Object.keys(D).map(d=>`<button class="b${nd===d?' on':''}" data-do="ndiff:${d}" aria-pressed="${nd===d}">${D[d]}</button>`).join('')}</div><p class="sm" style="margin-top:10px">Every puzzle has exactly one solution. Easy needs only single-candidate logic; Expert is sparse and demands deeper reasoning.</p><button class="b p" data-do="go2">${ic('play')}Start ${MD[nm]} · ${D[nd]}</button>`},
+daily(){const[ds,dc]=dailyState();return`<h1>Daily challenge</h1><div class="cd"><h2>${new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'})}</h2><p>Difficulty: <b>${D[dDiff()]}</b> · Everyone on this date gets the same puzzle.</p><p>Status: <span class="tag ${dc}">${ds}</span></p><p>Reward: <b>Daily Focus</b> achievement ${AC.daily?'(already unlocked)':'(locked)'}</p><button class="b p" data-do="daily">${ic('cal')}${ds==='In progress'?'Resume':'Start'} challenge</button></div><h2 style="margin-top:16px">Daily record</h2>${H.filter(h=>h.daily).length?`<div class="cd">`+H.filter(h=>h.daily).slice(0,10).map(h=>`<div class="tog"><span>${h.daily} · ${D[h.diff]}</span>${resTag(h.res)}</div>`).join('')+'</div>':empty('No daily challenges played yet.')}`},
+history(){return`<h1>Game history</h1>${H.length?`<div class="cd" style="overflow:auto"><table><tr><th>Date</th><th>Mode</th><th>Level</th><th>Result</th><th>Time</th><th>Mistakes</th><th>Hints</th></tr>${H.map(h=>`<tr><td>${new Date(h.t).toLocaleDateString()}</td><td>${MD[h.mode]}${h.daily?' (Daily)':''}</td><td>${D[h.diff]}</td><td>${resTag(h.res)}</td><td>${fm(h.time)}</td><td>${h.mist}</td><td>${h.hints}</td></tr>`).join('')}</table></div>`:empty('No games recorded yet. Finish or abandon a puzzle and it appears here.',`<button class="b p" data-do="go:new">Start a game</button>`)}`},
+stats(){const s=sts(),w=W();return`<h1>Statistics and progress</h1><div class="gr">${stat('Games started',ST.started)}${stat('Completed',s.n)}${stat('Completion rate',ST.started?Math.round(s.n/ST.started*100)+'%':'—')}${stat('Win streak',s.cur,'Longest: '+s.bst)}${stat('Avg. time',s.n?fm(s.avg):'—')}${stat('Hints used',H.reduce((a,h)=>a+h.hints,0))}${stat('Mistakes made',H.reduce((a,h)=>a+h.mist,0))}${stat('Daily challenges won',w.filter(h=>h.daily).length,H.filter(h=>h.daily).length+' played')}</div>
+<div class="cd" style="overflow:auto"><h2>By difficulty</h2><table><tr><th>Level</th><th>Played</th><th>Won</th><th>Fastest</th></tr>${Object.keys(D).map(d=>{const a=H.filter(h=>h.diff===d),b=w.filter(h=>h.diff===d);return`<tr><td>${D[d]}</td><td>${a.length}</td><td>${b.length}</td><td>${b.length?fm(Math.min(...b.map(h=>h.time))):'—'}</td></tr>`}).join('')}</table></div>
+<p class="sm" style="margin-top:12px">How we count: starting a puzzle counts as played. Starting a new puzzle over an unfinished one marks it abandoned and ends your win streak. Restarting keeps the same puzzle and isn’t counted again.</p><div class="row"><button class="b" data-do="exp">Export statistics</button><button class="b d" data-do="rst">Reset statistics</button></div>`},
+awards(){return`<h1>Achievements</h1><div class="gr">${AL.map(a=>{const[c,m]=a[3](),u=!!AC[a[0]];return`<div class="cd" style="${u?'border-color:var(--ac)':''}"><b>${u?'★':'☆'} ${a[1]}</b> <span class="tag ${u?'ok':''}">${u?'Unlocked':'Locked'}</span><p class="sm">${a[2]}</p><div class="bar" role="img" aria-label="${Math.min(c,m)} of ${m}"><i style="width:${Math.min(c,m)/m*100}%"></i></div><div class="sm">${Math.min(c,m)} / ${m}</div></div>`}).join('')}</div>`},
+howto(){EX=EX||gen('easy',7).puz;const g={puz:EX,cur:EX,notes:[]};
+return`<h1>How to play</h1><div class="gr2"><div class="cd"><h2>The rules</h2><ol style="color:var(--tx2);padding-left:20px;margin:0"><li>Fill the 9×9 grid with numbers 1 to 9.</li><li>Every row has each number exactly once.</li><li>Every column has each number exactly once.</li><li>Every 3×3 box has each number exactly once.</li><li>Original clues can’t be changed.</li><li>Use Notes to track possible candidates.</li><li>Use Hint when you need help.</li><li>Finish the grid without breaking a rule.</li></ol></div>
+<div class="cd"><h2>Reading the board</h2><div class="ex" aria-label="Example: the selected cell and the row, column and box it shares">${bd(g,40,0)}</div><p class="sm" style="margin-top:8px">The teal cell is selected. Blue cells share its row, column or box, so none of them can repeat its number. Purple cells hold the same number.</p></div></div>
+<div class="gr2"><div class="cd"><h2>Interactive tutorial</h2><p>A 1-minute practice grid: select a cell, enter a number, use Notes, and ask for a hint. Optional — skip it any time.</p><button class="b p" data-do="tutor">${ic('play')}Start practice</button></div>
+<div class="cd"><h2>Keyboard</h2><p style="margin:0"><kbd>1</kbd>–<kbd>9</kbd> enter · <kbd>←↑↓→</kbd> move · <kbd>Backspace</kbd> erase · <kbd>N</kbd> notes · <kbd>H</kbd> hint · <kbd>Z</kbd> undo · <kbd>Y</kbd> redo · <kbd>P</kbd> pause</p></div></div>
+<div class="cd"><h2>Mistakes and hints</h2><p>A <b>mistake</b> is counted when you enter a number that differs from the puzzle’s solution (not in Zen mode). A ✕ conflict marker only means two equal numbers share a unit; it isn’t counted. <b>Check</b> marks cells that don’t match the solution. <b>Hint</b> fills one correct cell and explains it. The game pauses automatically when you leave the tab.</p></div>`},
+prefs(){const tg=(k,l,d)=>`<div class="tog"><div><b>${l}</b><div class="sm">${d}</div></div><button class="sw" role="switch" aria-checked="${!!S[k]}" aria-label="${l}" data-do="tog:${k}"></button></div>`,sg2=(k,o)=>`<div class="row" style="margin:6px 0 12px">${o.map(x=>`<button class="b${S[k]==x[0]?' on':''}" data-do="set:${k}:${x[0]}" aria-pressed="${S[k]==x[0]}">${x[1]}</button>`).join('')}</div>`;
+return`<h1>Settings</h1><div class="cd"><h2>Appearance</h2>Theme${sg2('theme',[['dark','Dark cyberpunk'],['light','Light']])}Accent${sg2('acc',[['teal','Teal'],['lav','Lavender'],['blu','Blue']])}${tg('compact','Compact board text','Smaller numbers, more breathing room')}</div>
+<div class="cd" style="margin-top:14px"><h2>Gameplay</h2>Default difficulty${sg2('diff',Object.keys(D).map(d=>[d,D[d]]))}${tg('auto','Highlight conflicts','Mark equal numbers that share a row, column or box')}${tg('match','Highlight matching numbers','')}${tg('rel','Highlight row, column and box','')}${tg('autoN','Auto-remove notes','Clears matching notes in related cells')}${tg('cRes','Confirm before restarting','')}${tg('cNew','Confirm before new game','When an unfinished puzzle exists')}${tg('tim','Show timer in Zen mode','')}</div>
+<div class="cd" style="margin-top:14px"><h2>Accessibility and feedback</h2>${tg('hc','High contrast','Stronger text and grid lines')}${tg('rm','Reduce motion','Turns off animations')}Board size${sg2('size',[[85,'Small'],[100,'Medium'],[115,'Large']])}${tg('snd','Sound effects','Soft tones on entry and completion. Off by default.')}</div>
+<div class="cd" style="margin-top:14px"><h2>Data</h2><div class="row" style="margin:0"><button class="b" data-do="exp">Export statistics</button><button class="b d" data-do="rst">Reset statistics</button><button class="b d" data-do="clr">Clear saved game</button></div></div>`},
+about(){return`<div class="cd" style="text-align:center">${logo(80)}<h1>SudoZen</h1><p class="dsp" style="color:var(--ac)">Find Your Flow. Master the Grid.</p><p style="max-width:560px;margin:0 auto 12px">SudoZen is a modern Sudoku experience designed to help you slow down, sharpen your logic, and enjoy the satisfaction of solving one number at a time. With a calm cyberpunk atmosphere and intuitive tools, every puzzle becomes a moment of focus.</p><p style="max-width:560px;margin:0 auto 12px">Soft neon on dark surfaces keeps long sessions comfortable, while Zen-inspired spacing keeps attention on the grid.</p><p class="sm">Version 1.0.0 · Built with HTML, CSS and JavaScript · Progress is saved only in this browser.</p></div>`}};
+pages.game=pGame;
+const applyS=()=>{const d=document.documentElement;d.dataset.theme=S.theme;d.dataset.acc=S.acc;d.dataset.hc=S.hc?'on':'off';d.dataset.rm=S.rm?'on':'off';d.dataset.cp=S.compact?1:0;d.style.setProperty('--bs',S.size/100)};
+function render(){const r=(location.hash||'#home').slice(1);route=pages[r]?r:'home';if(route!=='game'&&G&&G.tut){G=BK;BK=null}if(route==='game'&&!G&&!busy){route='home';history.replaceState(null,'','#home')}
+document.querySelectorAll('.nv').forEach(a=>a.classList.toggle('on',a.dataset.r===route||(route==='game'&&a.dataset.r==='new')));$('#sb').classList.remove('open');applyS();
+$('#main').innerHTML=busy?`<div class="ld"><div class="ring"></div><h2>Preparing your puzzle…</h2><p>Checking that it has exactly one solution.</p></div>`:pages[route]();document.title='SudoZen · '+(nav.find(n=>n[0]===route)?.[1]||'Game');window.scrollTo(0,0)}
+addEventListener('hashchange',render);render();
+</script></body></html>
